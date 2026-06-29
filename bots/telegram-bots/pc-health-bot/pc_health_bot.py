@@ -51,4 +51,14 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Disk use in percentage
     disk_use = psutil.disk_usage('/').percent
 
+    report = (
+        "Sytem monitor\n" \
+        "-------------\n" \
+        f"*Cpu use*: {cpu_use}%\n" \
+        f"*Ram use*: {ram_use}%\n" \
+        f"*Disk use*: {disk_use}%\n"
+    )
+
+    await context.bot.send_message(text=report,  chat_id=update.effective_chat.id, parse_mode="Markdown")
+
     
