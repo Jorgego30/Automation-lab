@@ -42,3 +42,13 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     # Send "typing" accion
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
+
+    # Psutil variables
+    # Cpu use in percentage
+    cpu_use = psutil.cpu_percent(interval=1)
+    # Ram use in percentage
+    ram_use = psutil.virtual_memory().percent
+    # Disk use in percentage
+    disk_use = psutil.disk_usage('/').percent
+
+    
