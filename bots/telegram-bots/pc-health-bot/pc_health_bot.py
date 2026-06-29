@@ -1,6 +1,7 @@
 # Libraries imports
 import os
 import logging
+import psutil
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import filters, ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler
@@ -32,3 +33,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat_id=update.effective_chat.id,
         text="👋 Hello, Jorge! I'm your System Health bot. Use /status to check server status."
     )
+
+# Start function creation
+async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Security filter
+    if not update.effective_chat or update.effective_chat.id != ALLOWED_ID:
+        return
+    
+    # Send "typing" accion
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
