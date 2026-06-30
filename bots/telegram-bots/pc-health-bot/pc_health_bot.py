@@ -10,7 +10,7 @@ from telegram.ext import filters, ApplicationBuilder, ContextTypes, CommandHandl
 load_dotenv()
 
 # Token id
-TOKEN = os.getenv("TELEGRAM_TOKEN")
+TOKEN = os.getenv("TELEGRAM_TOKEN", "0")
 
 # Chat id
 ALLOWED_ID = int(os.getenv("TELEGRAM_CHAT_ID", "0"))
@@ -51,6 +51,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Disk use in percentage
     disk_use = psutil.disk_usage('/').percent
 
+    # Status report message
     report = (
         "Sytem monitor\n" \
         "-------------\n" \
@@ -59,6 +60,17 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"*Disk use*: {disk_use}%\n"
     )
 
+    # Sending status message
     await context.bot.send_message(text=report,  chat_id=update.effective_chat.id, parse_mode="Markdown")
 
+if __name__ == '__main__':
+    # Application creation with Bot Token
+    application = ApplicationBuilder().token(TOKEN).build()
     
+    # Command creation (Handlers)
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('status', status))
+    
+    # Launch bot in polling mode
+    logging.info("Bot iniciado. Presiona Ctrl+C para detenerlo.")
+    application.run_polling()
