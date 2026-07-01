@@ -1,6 +1,8 @@
 # Libraries imports
+import datetime
 import os
 import logging
+import time
 import psutil
 from dotenv import load_dotenv
 from telegram import Update
@@ -28,7 +30,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logging.warning(f"Access denied.")
         return
 
-    # 2. Responder al usuario autorizado
+    # Response to autorize user
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="👋 Hello, Jorge! I'm your System Health bot. Use /status to check server status."
@@ -52,7 +54,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     disk_use = psutil.disk_usage('/').percent
 
     # Status report message
-    report = (
+    status_report = (
         "Sytem monitor\n" \
         "-------------\n" \
         f"*Cpu use*: {cpu_use}%\n" \
@@ -61,7 +63,41 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     # Sending status message
-    await context.bot.send_message(text=report,  chat_id=update.effective_chat.id, parse_mode="Markdown")
+    await context.bot.send_message(text=status_report,  chat_id=update.effective_chat.id, parse_mode="Markdown")
+
+# Uptime function creation
+async def uptime(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Security filter
+    if not update.effective_chat or update.effective_chat.id != ALLOWED_ID:
+        return
+
+    # Send "typing" accion
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
+
+    # Last time you turn on your computer
+    boot_time = datetime.datetime.fromtimestamp(psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S")
+
+    # Current time 
+    current_time =  datetime.datetime.fromtimestamp(time.time()).strftime("%Y-%m-%d %H:%M:%S")
+
+    # How much time has your computer been turned on
+    total_time = time.time()-psutil.boot_time()
+
+    days_total = int(total_time // 86400)
+    hours_total = int((total_time % 86400) // 3600)
+    minutes_total = int((total_time % 3600) // 60)
+
+    parse_total_time = f"{days_total}d {hours_total}h {minutes_total}m"
+
+    uptime_report = (
+        f"📅 *Boot time*: {boot_time}\n"
+        f"🕒 *Current time*: {current_time}\n"
+        f"⏱️ *Uptime*: {parse_total_time}"
+    )
+
+    #
+    await context.bot.send_message(text=uptime_report,chat_id=update.effective_chat.id, parse_mode="Markdown")
+
 
 if __name__ == '__main__':
     # Application creation with Bot Token
@@ -70,6 +106,7 @@ if __name__ == '__main__':
     # Command creation (Handlers)
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('status', status))
+    application.add_handler(CommandHandler('uptime', uptime))
     
     # Launch bot in polling mode
     logging.info("Bot iniciado. Presiona Ctrl+C para detenerlo.")
