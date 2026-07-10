@@ -6,8 +6,8 @@ import time
 import psutil
 import urllib.request
 from dotenv import load_dotenv
-from telegram import Update
-from telegram.ext import filters, ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import filters, ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, CallbackQueryHandler
 
 # Read .env file
 load_dotenv()
@@ -30,12 +30,47 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.effective_chat or update.effective_chat.id != ALLOWED_ID:
         logging.warning(f"Access denied.")
         return
+    
+    if not update.effective_user:
+        return
+
+    user_name = update.effective_user.username 
+
+    welcome = f"👋 Hello, {user_name}! I'm your System Health bot. Use /status to check server status."
+
+    keyboard = [
+        [
+            InlineKeyboardButton("📊 System Status", callback_data='/status'),
+            InlineKeyboardButton("⏱️ Uptime", callback_data='/uptime')
+        ],
+        [
+            InlineKeyboardButton("🌐 Network Stats", callback_data='/network'),
+            InlineKeyboardButton("⚙️ Top Processes", callback_data='/top_processes')
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
     # Response to autorize user
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="👋 Hello, Jorge! I'm your System Health bot. Use /status to check server status."
-    )
+    await context.bot.send_message(text=welcome, chat_id=update.effective_chat.id, parse_mode="Markdown", reply_markup=reply_markup)
+
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if not query:
+        return
+
+    await query.answer() # Avisa a Telegram que el clic fue recibido
+    
+    # Redirigimos de forma inteligente según el botón pulsado
+    if query.data == '/status':
+        await status(update, context)
+    elif query.data == '/uptime':
+        await uptime(update, context)
+    elif query.data == '/network':
+        await network(update, context)
+    elif query.data == '/top_processes':
+        await top_processes(update, context)
 
 # Start function creation
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -170,6 +205,7 @@ if __name__ == '__main__':
     
     # Command creation (Handlers)
     application.add_handler(CommandHandler('start', start))
+    application.add_handler(CallbackQueryHandler(button_handler))
     application.add_handler(CommandHandler('status', status))
     application.add_handler(CommandHandler('uptime', uptime))
     application.add_handler(CommandHandler('network', network))
