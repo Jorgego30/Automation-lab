@@ -117,7 +117,13 @@ async def network(update: Update, context: ContextTypes.DEFAULT_TYPE):
     final_bytes_sent = kb_sent/1024
     final_bytes_recv = kb_recv/1024
 
-    public_IP = urllib.request.urlopen("https://api.ipify.org/", timeout=3).read().decode('utf-8')
+    try:
+        public_IP = urllib.request.urlopen("https://api.ipify.org/", timeout=3).read().decode('utf-8')
+    except Exception as e:
+        logging.error(f"Error fetching public IP: {e}") 
+        public_IP = "Unavailable (Connection Error)"
+
+
 
     data = (
         f"Bytes sent by your computer: {final_bytes_sent:.2f}MB" \
