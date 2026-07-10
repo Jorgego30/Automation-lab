@@ -141,7 +141,13 @@ async def top_processes(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Send "typing" accion
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")   
 
-    procs = [p.info for p in psutil.process_iter(['pid', 'name', 'username', 'cpu_percent'])]
+    procs = []
+
+    for p in psutil.process_iter(['pid', 'name', 'username', 'cpu_percent']):
+        try:
+            procs.append(p.info)
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue            
 
     # Ordenamos de mayor a menor usando la CPU como clave
     procs_ordenados = sorted(procs, key=lambda x: x['cpu_percent'], reverse=True)
