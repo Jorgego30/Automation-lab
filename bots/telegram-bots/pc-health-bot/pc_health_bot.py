@@ -123,8 +123,6 @@ async def network(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logging.error(f"Error fetching public IP: {e}") 
         public_IP = "Unavailable (Connection Error)"
 
-
-
     data = (
         f"Bytes sent by your computer: {final_bytes_sent:.2f}MB" \
         f"\nBytes received by your computer: {final_bytes_recv:.2f}MB"\
@@ -133,6 +131,31 @@ async def network(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     #
     await context.bot.send_message(text=data,chat_id=update.effective_chat.id, parse_mode="Markdown")
+
+# Top process function creation
+async def top_processes(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Security filter
+    if not update.effective_chat or update.effective_chat.id != ALLOWED_ID:
+        return
+
+    # Send "typing" accion
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")   
+
+    procs = [p.info for p in psutil.process_iter(['pid', 'name', 'username', 'cpu_percent'])]
+
+    # Ordenamos de mayor a menor usando la CPU como clave
+    procs_ordenados = sorted(procs, key=lambda x: x['cpu_percent'], reverse=True)
+
+    report = "Top 5 CPU processes\n"
+    for proc in procs_ordenados[:5]:
+        cpu = proc['cpu_percent'] if proc['cpu_percent'] is not None else 0.0
+        pid = proc['pid']
+        name = proc['name']
+        
+        report += f"`PID: {pid:<6} | CPU: {cpu:>5.1f}% | {name}`\n"
+
+    await context.bot.send_message(text=report,chat_id=update.effective_chat.id, parse_mode="Markdown")
+
 
 
 if __name__ == '__main__':
@@ -144,7 +167,8 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('status', status))
     application.add_handler(CommandHandler('uptime', uptime))
     application.add_handler(CommandHandler('network', network))
-    
+    application.add_handler(CommandHandler('top_processes', top_processes))
+
     # Launch bot in polling mode
     logging.info("Bot iniciado. Presiona Ctrl+C para detenerlo.")
     application.run_polling()
