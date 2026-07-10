@@ -4,6 +4,7 @@ import os
 import logging
 import time
 import psutil
+import urllib.request
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import filters, ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler
@@ -116,9 +117,12 @@ async def network(update: Update, context: ContextTypes.DEFAULT_TYPE):
     final_bytes_sent = kb_sent/1024
     final_bytes_recv = kb_recv/1024
 
+    public_IP = urllib.request.urlopen("https://api.ipify.org/", timeout=3).read().decode('utf-8')
+
     data = (
         f"Bytes sent by your computer: {final_bytes_sent:.2f}MB" \
-        f"\nBytes received by your computer: {final_bytes_recv:.2f}MB"
+        f"\nBytes received by your computer: {final_bytes_recv:.2f}MB"\
+        f"\nYour public IP is: {public_IP}"
     )
 
     #
