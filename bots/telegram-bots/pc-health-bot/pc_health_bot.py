@@ -98,6 +98,32 @@ async def uptime(update: Update, context: ContextTypes.DEFAULT_TYPE):
     #
     await context.bot.send_message(text=uptime_report,chat_id=update.effective_chat.id, parse_mode="Markdown")
 
+# Network function creation
+async def network(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Security filter
+    if not update.effective_chat or update.effective_chat.id != ALLOWED_ID:
+        return
+
+    # Send "typing" accion
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
+
+    bytes_sent = psutil.net_io_counters().bytes_sent
+    bytes_recv = psutil.net_io_counters().bytes_recv
+
+    kb_sent = bytes_sent / (1024)
+    kb_recv = bytes_recv / (1024)
+
+    final_bytes_sent = kb_sent/1024
+    final_bytes_recv = kb_recv/1024
+
+    data = (
+        f"Bytes sent by your computer: {final_bytes_sent:.2f}MB" \
+        f"\nBytes received by your computer: {final_bytes_recv:.2f}MB"
+    )
+
+    #
+    await context.bot.send_message(text=data,chat_id=update.effective_chat.id, parse_mode="Markdown")
+
 
 if __name__ == '__main__':
     # Application creation with Bot Token
@@ -107,6 +133,7 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('status', status))
     application.add_handler(CommandHandler('uptime', uptime))
+    application.add_handler(CommandHandler('network', network))
     
     # Launch bot in polling mode
     logging.info("Bot iniciado. Presiona Ctrl+C para detenerlo.")
