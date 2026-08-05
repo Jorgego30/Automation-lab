@@ -34,28 +34,28 @@ async def check_thresholds(context: ContextTypes.DEFAULT_TYPE):
         else:
             ALERT_STATE['cpu']['consecutive_hits'] = 0
             if ALERT_STATE['cpu']['active']:
-                msg = f"RESOLVED: CPU usage back to normal {cpu_use}%"
-                await context.bot.send_message(chat_id=ALLOWED_ID, text=msg, parse_mode="Markdown")
+                cpu_alert = f"RESOLVED: CPU usage back to normal {cpu_use}%"
+                await context.bot.send_message(chat_id=ALLOWED_ID, text=cpu_alert, parse_mode="Markdown")
                 ALERT_STATE['cpu']['active'] = False
 
         if ram_use >= RAM_THRESHOLD:
             if not ALERT_STATE['ram']['active']:
                 ram_alert = f"HIGH RAM USAGE: {ram_use}%\nCheck your processes and kill the most expensive"
-                await context.bot.send_message(chat_id=ALLOWED_ID, text=msg, parse_mode="Markdown")
+                await context.bot.send_message(chat_id=ALLOWED_ID, text=ram_alert, parse_mode="Markdown")
                 ALERT_STATE['ram']['active'] = True
         elif ALERT_STATE['ram']['active']:
-            msg = f"RESOLVED: RAM usage back to normal {ram_use}%"
-            await context.bot.send_message(chat_id=ALLOWED_ID, text=msg, parse_mode="Markdown")
+            ram_alert = f"RESOLVED: RAM usage back to normal {ram_use}%"
+            await context.bot.send_message(chat_id=ALLOWED_ID, text=ram_alert, parse_mode="Markdown")
             ALERT_STATE['ram']['active'] = False
 
         if disk_use >= DISK_THRESHOLD:
             if not ALERT_STATE['disk']['active']:
                 disk_alert = f"LOW DISK SPACE: {disk_use}%\nCheck your disk usage and try to liberate some space"
-                await context.bot.send_message(chat_id=ALLOWED_ID, text=msg, parse_mode="Markdown")
+                await context.bot.send_message(chat_id=ALLOWED_ID, text=disk_alert, parse_mode="Markdown")
                 ALERT_STATE['disk']['active'] = True
         elif ALERT_STATE['disk']['active']:
-            msg = f"RESOLVED: Disk usage back to normal {disk_use}%"
-            await context.bot.send_message(chat_id=ALLOWED_ID, text=msg, parse_mode="Markdown")
+            disk_alert= f"RESOLVED: Disk usage back to normal {disk_use}%"
+            await context.bot.send_message(chat_id=ALLOWED_ID, text=disk_alert, parse_mode="Markdown")
             ALERT_STATE['disk']['active'] = False
 
     except Exception as e:
