@@ -1,21 +1,23 @@
+# Add principal libraries 
 import logging
 import handlers
 from config import TOKEN
 from telegram import Update
 from telegram.ext import ContextTypes 
-
-
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler
 
+# Create button handler function to display all commands
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
 
+    # Debug if not receive a query
     if not query:
         return
 
-    await query.answer() # Avisa a Telegram que el clic fue recibido
+    # Sends an alert to telegram about the reception of the click
+    await query.answer()
     
-    # Redirigimos de forma inteligente según el botón pulsado
+    # Redirect each button to their function
     if query.data == '/status':
         await handlers.status(update, context)
     elif query.data == '/uptime':
