@@ -1,3 +1,4 @@
+# Add principal libraries
 import psutil
 import datetime
 import time
@@ -13,16 +14,20 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logging.warning(f"Access denied.")
         return
     
+    # Second security filter
     if not update.effective_user:
         return
 
+    # Check if the user has his username configurate, if not use his first name in the start message
     if update.effective_user.username == None:
         user_name = update.effective_user.first_name
     else:
         user_name = update.effective_user.username
 
+    # Create the welcome message
     welcome = f"👋 Hello, {user_name}! I'm your System Health bot. Use /status to check server status."
 
+    # Create the display of all buttons with all commands
     keyboard = [
         [
             InlineKeyboardButton("📊 System Status", callback_data='/status'),
@@ -34,6 +39,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     ]
 
+    # Create the reply of the buttons
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     # Response to autorize user
@@ -86,17 +92,24 @@ async def uptime(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # How much time has your computer been turned on
     total_time = time.time()-psutil.boot_time()
 
+    # Conversion of seconds to days
     days_total = int(total_time // 86400)
+
+    # Conversion of seconds to hours
     hours_total = int((total_time % 86400) // 3600)
+
+    # Conversion of seconds to minutes
     minutes_total = int((total_time % 3600) // 60)
 
+    # Create the message with the time
     parse_total_time = f"{days_total}d {hours_total}h {minutes_total}m"
 
+    # Create parse message
     uptime_report = (
         f"📅 *Boot time*: {boot_time}\n"
         f"🕒 *Current time*: {current_time}\n"
         f"⏱️ *Uptime*: {parse_total_time}"
     )
 
-    #
+    # Send the message
     await context.bot.send_message(text=uptime_report,chat_id=update.effective_chat.id, parse_mode="Markdown")
