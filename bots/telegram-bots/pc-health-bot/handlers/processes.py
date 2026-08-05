@@ -1,6 +1,7 @@
+import asyncio
 from config import ALLOWED_ID
 import psutil
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update
 from telegram.ext import ContextTypes 
 
 # Top process function creation
@@ -12,12 +13,30 @@ async def top_processes(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Send "typing" accion
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")   
 
+    active_procs = [] 
+
+    for p in psutil.process_iter(['pid', 'name']):
+        try:
+            p.cpu_percent(interval=None)
+            active_procs.append(p)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            continue            
+
+    await asyncio.sleep(0.2)
+
+    psutil.cpu_percent(interval=None)
+
     procs = []
 
-    for p in psutil.process_iter(['pid', 'name', 'username', 'cpu_percent']):
+    for p in active_procs:
         try:
-            procs.append(p.info)
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            cpu = p.cpu_percent(interval=None)
+            procs.append({
+                'pid':p.info['pid'],
+                'name':p.info['name'],
+                'cpu_percent':cpu
+            })
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             continue            
 
     # Ordenamos de mayor a menor usando la CPU como clave
