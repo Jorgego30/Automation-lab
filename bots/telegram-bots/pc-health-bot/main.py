@@ -26,11 +26,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await handlers.network(update, context)
     elif query.data == '/top_processes':
         await handlers.top_processes(update, context)
+    elif query.data == '/check:thresholds':
+        await handlers.check_thresholds(context)
 
 if __name__ == '__main__':
     # Application creation with Bot Token
     application = ApplicationBuilder().token(TOKEN).build()
-    
+
+    if application.job_queue:
+        application.job_queue.run_repeating(handlers.check_thresholds, interval=60,first=10)
+
     # Command creation (Handlers)
     application.add_handler(CommandHandler('start', handlers.start))
     application.add_handler(CallbackQueryHandler(button_handler))
