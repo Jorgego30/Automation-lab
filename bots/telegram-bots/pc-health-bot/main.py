@@ -5,6 +5,10 @@ from config import TOKEN
 from telegram import Update
 from telegram.ext import ContextTypes 
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler
+import socket
+
+# Disable IPv6 from sockets level of Python
+socket.has_ipv6 = False
 
 # Create button handler function to display all commands
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -34,7 +38,7 @@ if __name__ == '__main__':
     application = ApplicationBuilder().token(TOKEN).build()
 
     if application.job_queue:
-        application.job_queue.run_repeating(handlers.check_thresholds, interval=60,first=10)
+        application.job_queue.run_repeating(handlers.check_thresholds, interval=10,first=3)
 
     # Command creation (Handlers)
     application.add_handler(CommandHandler('start', handlers.start))
