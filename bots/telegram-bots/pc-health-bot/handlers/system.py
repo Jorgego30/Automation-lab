@@ -16,7 +16,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.effective_user:
         return
 
-    user_name = update.effective_user.username 
+    if update.effective_user.username == None:
+        user_name = update.effective_user.first_name
+    else:
+        user_name = update.effective_user.username
 
     welcome = f"👋 Hello, {user_name}! I'm your System Health bot. Use /status to check server status."
 
