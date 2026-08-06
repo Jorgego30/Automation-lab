@@ -5,10 +5,16 @@ from config import TOKEN
 from telegram import Update
 from telegram.ext import ContextTypes 
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler
+from telegram.request import HTTPXRequest
 import socket
 
-# Disable IPv6 from sockets level of Python
-socket.has_ipv6 = False
+# Forzar resolución IPv4 a nivel global de Python
+_old_getaddrinfo = socket.getaddrinfo
+def _only_ipv4_getaddrinfo(*args, **kwargs):
+    kwargs['family'] = socket.AF_INET
+    return _old_getaddrinfo(*args, **kwargs)
+
+socket.getaddrinfo = _only_ipv4_getaddrinfo
 
 # Create button handler function to display all commands
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -43,8 +49,19 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logger.error(f"Error touching button {query.data}: {e}", exc_info=True)
 
 if __name__ == '__main__':
-    # Application creation with Bot Token
-    application = ApplicationBuilder().token(TOKEN).build()
+    # Configuración de red para el cliente HTTPX de Telegram
+    request_config = HTTPXRequest(
+        connect_timeout=20.0,
+        read_timeout=20.0
+    )
+
+    # Application creation with Bot Token and HTTPX configuration
+    application = (
+        ApplicationBuilder()
+        .token(TOKEN)
+        .request(request_config)
+        .build()
+    )
 
     if application.job_queue:
         logger.info("Configurating JobQueue to check alerts")
