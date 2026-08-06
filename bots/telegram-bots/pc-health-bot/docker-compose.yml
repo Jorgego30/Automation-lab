@@ -1,0 +1,14 @@
+services:
+  pc-health-bot:
+    build: .
+    container_name: pc-health-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    # Necesario para que psutil mida la CPU/RAM y procesos reales de la máquina física/host
+    pid: host
+    # Necesario para que network.py mida las interfaces de red de la máquina (incluyendo Tailscale)
+    network_mode: host
+    volumes:
+      # Montaje opcional en modo lectura para que psutil lea el estado del kernel del host
+      - /proc:/host/proc:ro
