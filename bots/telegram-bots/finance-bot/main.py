@@ -56,19 +56,9 @@ if __name__ == '__main__':
         .build()
     )
 
-    # if application.job_queue:
-    #     logger.info("Configurating JobQueue to check alerts")
-    #     # application.job_queue.run_repeating(handlers.check_thresholds, interval=10,first=3)
-    # else:
-    #     logger.warning("JobQueue not available")
-        
     # Command creation (Handlers)
     application.add_handler(CommandHandler('start', handlers.start))
     application.add_handler(CallbackQueryHandler(button_handler))
-    # application.add_handler(CommandHandler('status', handlers.status))
-    # application.add_handler(CommandHandler('uptime', handlers.uptime))
-    # application.add_handler(CommandHandler('network', handlers.network))
-    # application.add_handler(CommandHandler('top_processes', handlers.top_processes))
 
     # Launch bot in polling mode
     logger.info("Bot running. Kill it with Ctrl+C")
