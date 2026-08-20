@@ -24,7 +24,7 @@ def setup_logger():
     console_handler.setFormatter(log_formatter)
     console_handler.setLevel(logging.INFO)
 
-    log = logging.getLogger("PCHealthBot")
+    log = logging.getLogger("FinaceBot")
     log.setLevel(logging.INFO)
 
     if not log.handlers:

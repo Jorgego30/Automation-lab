@@ -10,9 +10,9 @@ from telegram.request import HTTPXRequest
 
 # Forzar resolución IPv4 a nivel global de Python
 _old_getaddrinfo = socket.getaddrinfo
-def _only_ipv4_getaddrinfo(*args, **kwargs):
-    kwargs['family'] = socket.AF_INET
-    return _old_getaddrinfo(*args, **kwargs)
+
+def _only_ipv4_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+    return _old_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
 
 socket.getaddrinfo = _only_ipv4_getaddrinfo
 
@@ -56,11 +56,11 @@ if __name__ == '__main__':
         .build()
     )
 
-    if application.job_queue:
-        logger.info("Configurating JobQueue to check alerts")
-        # application.job_queue.run_repeating(handlers.check_thresholds, interval=10,first=3)
-    else:
-        logger.warning("JobQueue not available")
+    # if application.job_queue:
+    #     logger.info("Configurating JobQueue to check alerts")
+    #     # application.job_queue.run_repeating(handlers.check_thresholds, interval=10,first=3)
+    # else:
+    #     logger.warning("JobQueue not available")
         
     # Command creation (Handlers)
     application.add_handler(CommandHandler('start', handlers.start))
