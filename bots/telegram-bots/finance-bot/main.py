@@ -32,12 +32,13 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f"Button press: '{query.data}' by user {user_id}")
 
     try:
-        pass
-        # # Redirect each button to their function
-        # if query.data == '/status':
-        #     await handlers.status(update, context)
-        # else:
-        #     logger.warning(f"Callback data no recognized: {query.data}")
+        # Redirect each button to their function
+        if query.data == '/balance':
+            await handlers.balance(update, context)
+        elif query.data == '/cash_boxes':
+             await handlers.cash_boxes(update, context)
+        else:
+            logger.warning(f"Callback data no recognized: {query.data}")
     except Exception as e:
             logger.error(f"Error touching button {query.data}: {e}", exc_info=True)
 
@@ -59,6 +60,8 @@ if __name__ == '__main__':
     # Command creation (Handlers)
     application.add_handler(CommandHandler('start', handlers.start))
     application.add_handler(CallbackQueryHandler(button_handler))
+    application.add_handler(CommandHandler('balance', handlers.balance))
+
 
     # Launch bot in polling mode
     logger.info("Bot running. Kill it with Ctrl+C")
