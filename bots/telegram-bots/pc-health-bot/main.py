@@ -8,7 +8,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandle
 from telegram.request import HTTPXRequest
 import socket
 
-# Forzar resolución IPv4 a nivel global de Python
+# Force IPv4 resolution in global Python level 
 _old_getaddrinfo = socket.getaddrinfo
 def _only_ipv4_getaddrinfo(*args, **kwargs):
     kwargs['family'] = socket.AF_INET
@@ -28,6 +28,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Sends an alert to telegram about the reception of the click
     await query.answer()
 
+    # Check and save user id for messages
     user_id = update.effective_user.id if update.effective_user else "Unkown"
     logger.info(f"Button press: '{query.data}' by user {user_id}")
 
@@ -63,6 +64,7 @@ if __name__ == '__main__':
         .build()
     )
 
+    # Start alerts messages
     if application.job_queue:
         logger.info("Configurating JobQueue to check alerts")
         application.job_queue.run_repeating(handlers.check_thresholds, interval=10,first=3)

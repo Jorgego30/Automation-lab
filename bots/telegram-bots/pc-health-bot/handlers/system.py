@@ -64,7 +64,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Status report message
     status_report = (
-        "Sytem monitor\n" \
+        "System monitor\n" \
         "-------------\n" \
         f"*Cpu use*: {cpu_use}%\n" \
         f"*Ram use*: {ram_use}%\n" \

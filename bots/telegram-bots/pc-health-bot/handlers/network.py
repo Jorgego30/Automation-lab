@@ -58,5 +58,6 @@ async def network(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(text=data,chat_id=update.effective_chat.id, parse_mode="Markdown")
         logger.info(f"Red metrics send to {user_id}")
 
+    # Send log of errors
     except Exception as e:
         logger.error(f"Error executing /network: {e}")
