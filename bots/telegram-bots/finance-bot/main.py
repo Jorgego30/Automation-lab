@@ -8,7 +8,7 @@ from telegram.ext import ContextTypes
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler
 from telegram.request import HTTPXRequest
 
-# Forzar resolución IPv4 a nivel global de Python
+# Force IPv4 resolution in glbal Python level
 _old_getaddrinfo = socket.getaddrinfo
 
 def _only_ipv4_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
@@ -43,7 +43,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logger.error(f"Error touching button {query.data}: {e}", exc_info=True)
 
 if __name__ == '__main__':
-    # Configuración de red para el cliente HTTPX de Telegram
+    # Net configuration for HTTPX telegram client
     request_config = HTTPXRequest(
         connect_timeout=20.0,
         read_timeout=20.0
@@ -61,7 +61,6 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('start', handlers.start))
     application.add_handler(CallbackQueryHandler(button_handler))
     application.add_handler(CommandHandler('balance', handlers.balance))
-
 
     # Launch bot in polling mode
     logger.info("Bot running. Kill it with Ctrl+C")

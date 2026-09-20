@@ -39,8 +39,8 @@ async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
         # Send the message
         await context.bot.send_message(text=message_balances,chat_id=update.effective_chat.id, parse_mode="Markdown", reply_markup=reply_markup)
-        logger.info(f"top_processes sent correctly to {user_id}")
+        logger.info(f"Balances sent correctly to {user_id}")
 
     except Exception as e:
-        logger.error(f"Error obtaining or sending top_processes: {e}")
+        logger.error(f"Error obtaining or sending balances: {e}")
 

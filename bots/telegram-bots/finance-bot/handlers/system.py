@@ -1,5 +1,4 @@
 # Add principal libraries
-import psutil
 import datetime
 import time
 import logging
@@ -26,21 +25,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Create the welcome message
     welcome = f"👋 Hello, {user_name}! I'm your Finance Tracker Health bot. Use /balance to check your account balance."
-
-    # # Create the display of all buttons with all commands
-    # keyboard = [
-    #     [
-    #         InlineKeyboardButton("📊 System Status", callback_data='/status'),
-    #         InlineKeyboardButton("⏱️ Uptime", callback_data='/uptime')
-    #     ],
-    #     [
-    #         InlineKeyboardButton("🌐 Network Stats", callback_data='/network'),
-    #         InlineKeyboardButton("⚙️ Top Processes", callback_data='/top_processes')
-    #     ]
-    # ]
-
-    # # Create the reply of the buttons
-    # reply_markup = InlineKeyboardMarkup(keyboard)
 
     # Response to autorize user
     await context.bot.send_message(text=welcome, chat_id=update.effective_chat.id, parse_mode="Markdown")
